@@ -10,6 +10,9 @@ nix="/nix/store/mc43d38fibi94pp5crfwacl5gbslccd0-nix-2.13.3"
 cacert="/nix/store/ba4f8msp39cfvfpw3m7fsalb4psw347z-nss-cacert-3.83"
 INSTALL_MODE=no-daemon
 
+# make dest be bindmounted
+mount --bind $(mkdtmp -d) $dest
+
 if ! [ -e "$self/.reginfo" ]; then
     echo "$0: incomplete installer (.reginfo is missing)" >&2
 fi
