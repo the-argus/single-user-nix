@@ -1,0 +1,67 @@
+#!/bin/sh
+
+tmpdir=$(mktemp -d)
+hashscript=$tmpdir/print_hashes
+nix_version="2.13.3"
+
+oops() {
+    echo "$0:" "$@" >&2
+    exit 1
+}
+
+curl -L https://nixos.org/nix/install > $tmpdir/installer
+
+# the nixos installer script contains one case statement which defines some
+# variables regarding the hashes and urls of the tarballs
+case_linenumber=$(nl -n ln $tmpdir/installer | grep -n 'case' | sed -E -e "s/(^[0-9]*).*?/\1/")
+esac_linenumber=$(nl -n ln $tmpdir/installer | grep -n 'esac' | sed -E -e "s/(^[0-9]*).*?/\1/")
+
+# frankenstein together a script which will print the information we need
+
+cat <<EOF > $hashscript
+
+hash=
+system=
+
+EOF
+
+sed -n "${case_linenumber},${esac_linenumber}p;" $tmpdir/installer >> $hashscript
+
+cat <<EOF >> $hashscript
+
+if [ "\$1" == "hash" ]; then
+    echo \$hash
+else
+    echo \$system
+fi
+
+EOF
+
+chmod +x $hashscript
+
+# use the frankenstein script to get the two variables we need for the system
+# that this script is being run on
+system=$($hashscript)
+hash=$($hashscript hash)
+
+# fetch the tarball
+tarball="$tmpdir/nix-${nix_version}-${system}.tar.xz"
+wget "https://releases.nixos.org/nix/nix-2.13.3/nix-${nix_version}-${system}.tar.xz" \
+    -O $tarball
+
+# compare hashes
+actual_hash="$(sha256sum -b "$tarball" | cut -c1-64)"
+if [ "$hash" != "$actual_hash" ]; then
+    oops "SHA-256 hash mismatch; expected $hash, got $hash2"
+fi
+
+# unpack tarball
+unpack=$tmpdir/unpack
+mkdir -p "$unpack"
+tar -xJf "$tarball" -C "$unpack" || oops "failed to unpack '$url'"
+
+script=$(echo "$unpack"/*/install)
+
+[ -e "$script" ] || oops "installation script is missing from the binary tarball!"
+
+echo $tmpdir/unpack
