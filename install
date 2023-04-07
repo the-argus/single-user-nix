@@ -12,7 +12,7 @@ source ./config
 dest="/nix" # this really should not change
 nix="/nix/store/mc43d38fibi94pp5crfwacl5gbslccd0-nix-2.13.3"
 cacert="/nix/store/ba4f8msp39cfvfpw3m7fsalb4psw347z-nss-cacert-3.83"
-$HOME=$link/HOME
+HOME=$link/HOME
 mkdir -p $HOME
 INSTALL_MODE=no-daemon
 
