@@ -6,3 +6,6 @@ link=./unpack
 
 # where to copy the print_hashes script to. this is added to the git repo
 local_hashscript=./print_hashes
+
+# can also be "nixpkgs-22.11" etc
+nixpkgs_release="nixpkgs-unstable"
