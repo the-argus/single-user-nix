@@ -12,6 +12,7 @@ if [ $install_in_tmpdir == "yes" ]; then
     target=$(mktemp -d)
 else
     target=$install_dir
+    mkdir -p $install_dir
 fi
 
 [ -e $local_hashscript ] || oops "no local hashscript found at ${local_hashscript}. Run update_print_hashes to generate the file."
