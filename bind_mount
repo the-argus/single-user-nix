@@ -1,0 +1,8 @@
+#!/bin/sh
+
+source ./config
+
+# make dest be bindmounted to the tmpdir where we unpacked the tarball
+mount --bind $(readlink $link) /nix
+
+unshare --fork --user --mount ./install
