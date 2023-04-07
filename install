@@ -12,6 +12,8 @@ source ./config
 dest="/nix" # this really should not change
 nix="/nix/store/mc43d38fibi94pp5crfwacl5gbslccd0-nix-2.13.3"
 cacert="/nix/store/ba4f8msp39cfvfpw3m7fsalb4psw347z-nss-cacert-3.83"
+$HOME=$link/HOME
+mkdir -p $HOME
 INSTALL_MODE=no-daemon
 
 # make dest be bindmounted to the tmpdir where we unpacked the tarball
@@ -81,71 +83,14 @@ if [ -z "$NIX_INSTALLER_NO_CHANNEL_ADD" ]; then
     fi
 fi
 
-added=
-p=
-p_sh=$HOME/.nix-profile/etc/profile.d/nix.sh
-p_fish=$HOME/.nix-profile/etc/profile.d/nix.fish
-if [ -z "$NIX_INSTALLER_NO_MODIFY_PROFILE" ]; then
-    # Make the shell source nix.sh during login.
-    for i in .bash_profile .bash_login .profile; do
-        fn="$HOME/$i"
-        if [ -w "$fn" ]; then
-            if ! grep -q "$p_sh" "$fn"; then
-                echo "modifying $fn..." >&2
-                printf '\nif [ -e %s ]; then . %s; fi # added by Nix installer\n' "$p_sh" "$p_sh" >> "$fn"
-            fi
-            added=1
-            p=${p_sh}
-            break
-        fi
-    done
-    for i in .zshenv .zshrc; do
-        fn="$HOME/$i"
-        if [ -w "$fn" ]; then
-            if ! grep -q "$p_sh" "$fn"; then
-                echo "modifying $fn..." >&2
-                printf '\nif [ -e %s ]; then . %s; fi # added by Nix installer\n' "$p_sh" "$p_sh" >> "$fn"
-            fi
-            added=1
-            p=${p_sh}
-            break
-        fi
-    done
-
-    if [ -d "$HOME/.config/fish" ]; then
-        fishdir=$HOME/.config/fish/conf.d
-        if [ ! -d "$fishdir" ]; then
-            mkdir -p "$fishdir"
-        fi
-
-        fn="$fishdir/nix.fish"
-        echo "placing $fn..." >&2
-        printf '\nif test -e %s; . %s; end # added by Nix installer\n' "$p_fish" "$p_fish" > "$fn"
-        added=1
-        p=${p_fish}
-    fi
-else
-    p=${p_sh}
-fi
-
-if [ -z "$added" ]; then
-    cat >&2 <<EOF
+cat >&2 <<EOF
 
 Installation finished!  To ensure that the necessary environment
-variables are set, please add the line
+variables are set, type one of the following, depending on which shell you
+are using:
 
-  . $p
+. nix_environment_bash
+. nix_environment_zsh
+. nix_environment_fish
 
-to your shell profile (e.g. ~/.profile).
 EOF
-else
-    cat >&2 <<EOF
-
-Installation finished!  To ensure that the necessary environment
-variables are set, either log in again, or type
-
-  . $p
-
-in your shell.
-EOF
-fi
