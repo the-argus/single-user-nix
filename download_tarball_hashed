@@ -30,7 +30,7 @@ if [ -e $target ]; then
     echo "$tarball already exists..."
     existing_hash="$(sha256sum -b "$tarball" | cut -c1-64)"
     if [ "$existing_hash" == "$hash" ]; then
-        echo "hashes match, skipping download an unpack."
+        echo "hashes match, skipping download and unpack."
         skip_download_and_unpack="yes"
     fi
 fi
