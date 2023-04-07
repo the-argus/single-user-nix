@@ -1,6 +1,9 @@
 
 # variables which are common between scripts
 
+# TODO this may change with update_print_hashes... probably should come from there.
+nix_version="2.13.3"
+
 # where to link the /tmp/xyz/unpack/ unpacked tarball to
 link=./unpack
 
