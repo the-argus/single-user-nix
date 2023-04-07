@@ -29,7 +29,7 @@ sed -n "${case_linenumber},${esac_linenumber}p;" $tmpdir/installer >> $hashscrip
 
 cat <<EOF >> $hashscript
 
-if [ "\$1" == "hash" ]; then
+if [ "\$1" == "system" ]; then
     echo \$hash
 else
     echo \$system
@@ -39,29 +39,4 @@ EOF
 
 chmod +x $hashscript
 
-# use the frankenstein script to get the two variables we need for the system
-# that this script is being run on
-system=$($hashscript)
-hash=$($hashscript hash)
-
-# fetch the tarball
-tarball="$tmpdir/nix-${nix_version}-${system}.tar.xz"
-wget "https://releases.nixos.org/nix/nix-2.13.3/nix-${nix_version}-${system}.tar.xz" \
-    -O $tarball
-
-# compare hashes
-actual_hash="$(sha256sum -b "$tarball" | cut -c1-64)"
-if [ "$hash" != "$actual_hash" ]; then
-    oops "SHA-256 hash mismatch; expected $hash, got $hash2"
-fi
-
-# unpack tarball
-unpack=$tmpdir/unpack
-mkdir -p "$unpack"
-tar -xJf "$tarball" -C "$unpack" || oops "failed to unpack '$url'"
-
-script=$(echo "$unpack"/*/install)
-
-[ -e "$script" ] || oops "installation script is missing from the binary tarball!"
-
-echo $tmpdir/unpack
+mv $hashscript .
