@@ -1,0 +1,49 @@
+
+hash=
+system=
+
+case "$(uname -s).$(uname -m)" in
+    Linux.x86_64)
+        hash=afa6bf82bacb18ec0d6a1fd992b718192f895023d6cea8b94b2fb35fce352ff5
+        path=1sh0llzrvkah17hypza89fcd5bmm35cl/nix-2.13.3-x86_64-linux.tar.xz
+        system=x86_64-linux
+        ;;
+    Linux.i?86)
+        hash=579a79a155c93c07f23e58de1dfa766d905239315b6b8c116e0ad7ffb7b14135
+        path=bg4vn61787q0l6wny81laa7al4sw5hda/nix-2.13.3-i686-linux.tar.xz
+        system=i686-linux
+        ;;
+    Linux.aarch64)
+        hash=dfbbaa86404c3efe74d87c8d4c39081affc673c8b5f64cfefc4ab0eaf84ed39b
+        path=zdq06xpx6a4a1hkaqcvjj9lbd7vqd9c3/nix-2.13.3-aarch64-linux.tar.xz
+        system=aarch64-linux
+        ;;
+    Linux.armv6l)
+        hash=debcb8a09744e83fca06efc6c5eee3f6066653da27dda8e0fb861e565b93f5f5
+        path=60gh3w8ikkhf547d3scyhsn7xlpp1k01/nix-2.13.3-armv6l-linux.tar.xz
+        system=armv6l-linux
+        ;;
+    Linux.armv7l)
+        hash=07a1e718e9ebfd11b0c8ba947029b5dc50a81f4e6f8ac5b8b8e3572e1ce436cb
+        path=cr6g8xc66yc02avw3ih4h96dbamqc3xw/nix-2.13.3-armv7l-linux.tar.xz
+        system=armv7l-linux
+        ;;
+    Darwin.x86_64)
+        hash=2b036faeccdce4b6ba9ca4aa7971b49d13a1ee4ac13ea834fb24c4d0d7e8536a
+        path=s8yj3dnxmkk8ggzzymxwm1qb3s5hk133/nix-2.13.3-x86_64-darwin.tar.xz
+        system=x86_64-darwin
+        ;;
+    Darwin.arm64|Darwin.aarch64)
+        hash=200e777b541ddbadafdbe3817dba504754fa8fb0c9d1dd3f33dee6578045ab39
+        path=nh14dgrnxgd9dgg14bvbmi33dd5ipnml/nix-2.13.3-aarch64-darwin.tar.xz
+        system=aarch64-darwin
+        ;;
+    *) oops "sorry, there is no binary distribution of Nix for your platform";;
+esac
+
+if [ "$1" == "system" ]; then
+    echo $hash
+else
+    echo $system
+fi
+
