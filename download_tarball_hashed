@@ -39,6 +39,6 @@ mkdir -p "$unpack"
 tar -xJf "$tarball" -C "$unpack" || oops "failed to unpack '$url'"
 
 rm -f $link
-source=$(ls $target/unpack/nix*)
+source=$target/unpack/nix*
 [ -e $source ] || oops "$source doesn't exist."
 ln -sf $source $link
