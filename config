@@ -9,3 +9,9 @@ local_hashscript=./print_hashes
 
 # can also be "nixpkgs-22.11" etc
 nixpkgs_release="nixpkgs-unstable"
+
+# if "yes", then the nix tarball will get unpacked into a /tmp folder
+install_in_tmpdir="no"
+
+# where to put all the nix stuff if we're not using a tmp dir
+install_dir=./nix_install

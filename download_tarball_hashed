@@ -6,6 +6,13 @@ oops() {
     echo "$0:" "$@" >&2
     exit 1
 }
+target=
+
+if [ $install_in_tmpdir == "yes" ]; then
+    target=$(mktemp -d)
+else
+    target=$install_dir
+fi
 
 [ -e $local_hashscript ] || oops "no local hashscript found at ${local_hashscript}. Run update_print_hashes to generate the file."
 
@@ -15,7 +22,7 @@ system=$($local_hashscript system)
 hash=$($local_hashscript)
 
 # fetch the tarball
-tarball="$tmpdir/nix-${nix_version}-${system}.tar.xz"
+tarball="$target/nix-${nix_version}-${system}.tar.xz"
 wget "https://releases.nixos.org/nix/nix-2.13.3/nix-${nix_version}-${system}.tar.xz" \
     -O $tarball
 
@@ -26,9 +33,9 @@ if [ "$hash" != "$actual_hash" ]; then
 fi
 
 # unpack tarball
-unpack=$tmpdir/unpack
+unpack=$target/unpack
 mkdir -p "$unpack"
 tar -xJf "$tarball" -C "$unpack" || oops "failed to unpack '$url'"
 
 rm -f $link
-ln -sf $tmpdir/unpack $link
+ln -sf $target/unpack $link
