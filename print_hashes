@@ -42,8 +42,8 @@ case "$(uname -s).$(uname -m)" in
 esac
 
 if [ "$1" == "system" ]; then
-    echo $hash
-else
     echo $system
+else
+    echo $hash
 fi
 

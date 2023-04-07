@@ -27,9 +27,9 @@ sed -n "${case_linenumber},${esac_linenumber}p;" $tmpdir/installer >> $hashscrip
 cat <<EOF >> $hashscript
 
 if [ "\$1" == "system" ]; then
-    echo \$hash
-else
     echo \$system
+else
+    echo \$hash
 fi
 
 EOF
