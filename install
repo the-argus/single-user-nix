@@ -51,6 +51,7 @@ mkdir -p "$dest/store" "$dest/var/nix"
 if ! "$nix/bin/nix-store" --load-db < "$link/.reginfo"; then
     echo "$0: unable to register valid paths" >&2
     ls -al $nix
+    ls -al /nix
     exit 1
 fi
 
