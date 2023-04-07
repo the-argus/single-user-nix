@@ -1,16 +1,18 @@
 #!/bin/sh
 
-hashscript=./print_hashes
+source ./config
 
 oops() {
     echo "$0:" "$@" >&2
     exit 1
 }
 
+[ -e $local_hashscript ] || oops "no local hashscript found at ${local_hashscript}. Run update_print_hashes to generate the file."
+
 # use the frankenstein print_hashes to get the two variables we need for the
 # system that this script is being run on
-system=$($hashscript system)
-hash=$($hashscript)
+system=$($local_hashscript system)
+hash=$($local_hashscript)
 
 # fetch the tarball
 tarball="$tmpdir/nix-${nix_version}-${system}.tar.xz"
@@ -28,8 +30,5 @@ unpack=$tmpdir/unpack
 mkdir -p "$unpack"
 tar -xJf "$tarball" -C "$unpack" || oops "failed to unpack '$url'"
 
-script=$(echo "$unpack"/*/install)
-
-[ -e "$script" ] || oops "installation script is missing from the binary tarball!"
-
-echo $tmpdir/unpack
+rm -f $link
+ln -sf $tmpdir/unpack $link

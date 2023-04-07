@@ -1,0 +1,8 @@
+
+# variables which are common between scripts
+
+# where to link the /tmp/xyz/unpack/ unpacked tarball to
+link=./unpack
+
+# where to copy the print_hashes script to. this is added to the git repo
+local_hashscript=./print_hashes

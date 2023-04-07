@@ -4,16 +4,20 @@ set -e
 
 umask 0022
 
-dest="/nix"
-self="$(dirname "$0")"
+source ./config
+
+# first, download tarball. if it exits with failure then also do that
+./download_tarball_hashed || exit 1
+
+dest="/nix" # this really should not change
 nix="/nix/store/mc43d38fibi94pp5crfwacl5gbslccd0-nix-2.13.3"
 cacert="/nix/store/ba4f8msp39cfvfpw3m7fsalb4psw347z-nss-cacert-3.83"
 INSTALL_MODE=no-daemon
 
-# make dest be bindmounted
-mount --bind $(mkdtmp -d) $dest
+# make dest be bindmounted to the tmpdir where we unpacked the tarball
+mount --bind $(readlink $link) $dest
 
-if ! [ -e "$self/.reginfo" ]; then
+if ! [ -e "$link/.reginfo" ]; then
     echo "$0: incomplete installer (.reginfo is missing)" >&2
 fi
 
@@ -51,7 +55,7 @@ if [ ! -t 0 ]; then
   echo ""
 fi
 
-for i in $(cd "$self/store" >/dev/null && echo ./*); do
+for i in $link/store/*; do
     if [ -t 0 ]; then
       printf "." >&2
     fi
@@ -60,7 +64,7 @@ for i in $(cd "$self/store" >/dev/null && echo ./*); do
         rm -rf "$i_tmp"
     fi
     if ! [ -e "$dest/store/$i" ]; then
-        cp -RPp "$self/store/$i" "$i_tmp"
+        cp -RPp "$link/store/$i" "$i_tmp"
         chmod -R a-w "$i_tmp"
         chmod +w "$i_tmp"
         mv "$i_tmp" "$dest/store/$i"
@@ -69,7 +73,7 @@ for i in $(cd "$self/store" >/dev/null && echo ./*); do
 done
 echo "" >&2
 
-if ! "$nix/bin/nix-store" --load-db < "$self/.reginfo"; then
+if ! "$nix/bin/nix-store" --load-db < "$link/.reginfo"; then
     echo "$0: unable to register valid paths" >&2
     exit 1
 fi
