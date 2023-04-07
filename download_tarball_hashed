@@ -2,6 +2,11 @@
 
 hashscript=./print_hashes
 
+oops() {
+    echo "$0:" "$@" >&2
+    exit 1
+}
+
 # use the frankenstein print_hashes to get the two variables we need for the
 # system that this script is being run on
 system=$($hashscript system)

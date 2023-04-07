@@ -4,11 +4,6 @@ tmpdir=$(mktemp -d)
 hashscript=$tmpdir/print_hashes
 nix_version="2.13.3"
 
-oops() {
-    echo "$0:" "$@" >&2
-    exit 1
-}
-
 curl -L https://nixos.org/nix/install > $tmpdir/installer
 
 # the nixos installer script contains one case statement which defines some
