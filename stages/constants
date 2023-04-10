@@ -1,5 +1,5 @@
 #!/bin/sh
-source ../config
+source ./config
 
 dest="/nix" # this really should not change
 nix="/nix/store/mc43d38fibi94pp5crfwacl5gbslccd0-nix-2.13.3"
