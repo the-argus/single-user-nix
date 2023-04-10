@@ -1,9 +1,0 @@
-#!/bin/sh
-
-set -e
-umask 0022
-
-source ../config
-source ../constants
-
-# shellcheck source=./nix-profile.sh.in
