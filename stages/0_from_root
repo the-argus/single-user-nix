@@ -2,20 +2,22 @@
 
 set -e
 
+current_directory=./stages
+
 # run stage one of installation
-./1_bind_mount
+$current_directory/1_bind_mount
 
 # stage two as user (nobody)
-unshare --fork --user --mount ./install
+unshare --fork --user --mount $current_directory/install
 
-unshare --fork --user --mount ./2_download_hashed_tarball
+unshare --fork --user --mount $current_directory/2_download_hashed_tarball
 
 # test that everything was set up correctly
-unshare --fork --user --mount ./3_assurances
+unshare --fork --user --mount $current_directory/3_assurances
 
 # begin install
 echo "performing a single-user installation of Nix..." >&2
-./4_load_db
+$current_directory/4_load_db
 
 cat >&2 <<EOF
 
