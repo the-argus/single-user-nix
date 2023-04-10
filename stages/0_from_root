@@ -5,10 +5,10 @@ set -e
 current_directory=./stages
 
 # stage one as user (nobody)
-unshare --fork --user --mount $current_directory/2_download_hashed_tarball
+unshare --fork --user --mount $current_directory/1_download_hashed_tarball
 
 # bind mount as root
-$current_directory/1_bind_mount
+$current_directory/2_bind_mount
 
 # test that everything was set up correctly
 unshare --fork --user --mount $current_directory/3_assurances
