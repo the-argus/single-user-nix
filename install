@@ -1,94 +1,9 @@
 #!/bin/sh
 
 set -e
-
 umask 0022
 
-source ./config
-
-# first, download tarball. if it exits with failure then also do that
-./download_tarball_hashed || exit 1
-
-dest="/nix" # this really should not change
-nix="/nix/store/mc43d38fibi94pp5crfwacl5gbslccd0-nix-2.13.3"
-cacert="/nix/store/ba4f8msp39cfvfpw3m7fsalb4psw347z-nss-cacert-3.83"
-HOME=$link/HOME
-mkdir -p $HOME
-INSTALL_MODE=no-daemon
-
-if ! [ -e "$link/.reginfo" ]; then
-    echo "$0: incomplete installer (.reginfo is missing)" >&2
-fi
-
-if [ -z "$USER" ] && ! USER=$(id -u -n); then
-    echo "$0: \$USER is not set" >&2
-    exit 1
-fi
-
-if [ -z "$HOME" ]; then
-    echo "$0: \$HOME is not set" >&2
-    exit 1
-fi
-
-# space-separated string
-ACTIONS="install"
-
-if [ "$(id -u)" -eq 0 ]; then
-    printf '\e[1;31mwarning: installing Nix as root is not supported by this script!\e[0m\n'
-fi
-
-echo "performing a single-user installation of Nix..." >&2
-
-if ! [ -e "$dest" ]; then
-    echo "$dest does not exist. It should have been bind-mounted from a location which is readable to your user before this script was run."
-    exit 1
-fi
-
-# The auto-chroot code in openFromNonUri() checks for the
-# non-existence of /nix/var/nix, so we need to create it here.
-mkdir -p "$dest/store" "$dest/var/nix"
-
-echo "beginning $nix/bin/nix-store --load-db command"
-if ! "$nix/bin/nix-store" --load-db < "$link/.reginfo"; then
-    echo "$0: unable to register valid paths" >&2
-    exit 1
-fi
+source ../config
+source ../constants
 
 # shellcheck source=./nix-profile.sh.in
-. "$nix/etc/profile.d/nix.sh"
-
-if ! "$nix/bin/nix-env" -i "$nix"; then
-    echo "$0: unable to install Nix into your default profile" >&2
-    exit 1
-fi
-
-# Install an SSL certificate bundle.
-if [ -z "$NIX_SSL_CERT_FILE" ] || ! [ -f "$NIX_SSL_CERT_FILE" ]; then
-    "$nix/bin/nix-env" -i "$cacert"
-    export NIX_SSL_CERT_FILE="$HOME/.nix-profile/etc/ssl/certs/ca-bundle.crt"
-fi
-
-# Subscribe the user to the Nixpkgs channel and fetch it.
-if [ -z "$NIX_INSTALLER_NO_CHANNEL_ADD" ]; then
-    if ! "$nix/bin/nix-channel" --list | grep -q "^nixpkgs "; then
-        "$nix/bin/nix-channel" --add https://nixos.org/channels/$nixpkgs_release
-    fi
-    if [ -z "$_NIX_INSTALLER_TEST" ]; then
-        if ! "$nix/bin/nix-channel" --update nixpkgs; then
-            echo "Fetching the nixpkgs channel failed. (Are you offline?)"
-            echo "To try again later, run \"nix-channel --update nixpkgs\"."
-        fi
-    fi
-fi
-
-cat >&2 <<EOF
-
-Installation finished!  To ensure that the necessary environment
-variables are set, type one of the following, depending on which shell you
-are using:
-
-. nix_environment_bash
-. nix_environment_zsh
-. nix_environment_fish
-
-EOF

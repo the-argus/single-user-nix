@@ -1,0 +1,43 @@
+#!/bin/sh
+
+
+# this script ensures that needed directories exist, and environment variables
+# are set.
+
+set -e
+umask 0022
+
+source ../config
+source ./constants
+
+mkdir -p $HOME
+
+if ! [ -e "$link/.reginfo" ]; then
+    echo "$0: incomplete installer (.reginfo is missing)" >&2
+fi
+
+if [ -z "$USER" ] && ! USER=$(id -u -n); then
+    echo "$0: \$USER is not set" >&2
+    exit 1
+fi
+
+if [ -z "$HOME" ]; then
+    echo "$0: \$HOME is not set" >&2
+    exit 1
+fi
+
+# space-separated string
+ACTIONS="install"
+
+if [ "$(id -u)" -eq 0 ]; then
+    printf '\e[1;31mwarning: installing Nix as root is not supported by this script!\e[0m\n'
+fi
+
+if ! [ -e "$dest" ]; then
+    echo "$dest does not exist. It should have been bind-mounted from a location which is readable to your user before this script was run."
+    exit 1
+fi
+
+# The auto-chroot code in openFromNonUri() checks for the
+# non-existence of /nix/var/nix, so we need to create it here.
+mkdir -p "$dest/store" "$dest/var/nix"

@@ -1,0 +1,15 @@
+#!/bin/sh
+
+source ./constants
+source ../config
+
+set -e
+umask 0022
+
+. "$nix/etc/profile.d/nix.sh"
+
+echo "beginning $nix/bin/nix-store --load-db command"
+if ! "$nix/bin/nix-store" --load-db < "$link/.reginfo"; then
+    echo "$0: unable to register valid paths" >&2
+    exit 1
+fi

@@ -1,0 +1,30 @@
+#!/bin/sh
+
+set -e
+
+# run stage one of installation
+./1_bind_mount
+
+# stage two as user (nobody)
+unshare --fork --user --mount ./install
+
+unshare --fork --user --mount ./2_download_hashed_tarball
+
+# test that everything was set up correctly
+unshare --fork --user --mount ./3_assurances
+
+# begin install
+echo "performing a single-user installation of Nix..." >&2
+./4_load_db
+
+cat >&2 <<EOF
+
+Installation finished!  To ensure that the necessary environment
+variables are set, type one of the following, depending on which shell you
+are using:
+
+. nix_environment_bash
+. nix_environment_zsh
+. nix_environment_fish
+
+EOF
