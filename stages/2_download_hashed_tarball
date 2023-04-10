@@ -51,7 +51,7 @@ if [ $skip_download_and_unpack != "yes" ]; then
     # unpack tarball
     unpack=$target/unpack
     mkdir -p "$unpack"
-    tar -xJf "$tarball" -C "$unpack" || oops "failed to unpack '$url'"
+    tar -xJf --warning=none "$tarball" -C "$unpack" || oops "failed to unpack '$url'"
 fi
 
 rm -f $link
