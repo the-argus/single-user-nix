@@ -1,7 +1,7 @@
 #!/bin/sh
 
-source ./constants
-source ../config
+source ./stages/constants
+source ./config
 
 . "$nix/etc/profile.d/nix.sh"
 

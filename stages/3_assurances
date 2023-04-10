@@ -7,8 +7,8 @@
 set -e
 umask 0022
 
-source ../config
-source ./constants
+source ./config
+source ./stages/constants
 
 mkdir -p $HOME
 
